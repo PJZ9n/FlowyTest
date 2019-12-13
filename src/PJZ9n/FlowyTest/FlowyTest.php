@@ -25,6 +25,7 @@
     
     use Closure;
     use flowy\Flowy;
+    use pocketmine\event\player\PlayerChatEvent;
     use function flowy\listen;
     use pocketmine\plugin\PluginBase;
     use pocketmine\event\block\BlockBreakEvent;
@@ -36,9 +37,40 @@
         {
             Flowy::run($this, Closure::fromCallable(function () {
                 /** @var BlockBreakEvent $event */
-                $event = yield listen(BlockBreakEvent::class);
+                $event = yield listen(BlockBreakEvent::class);//多分ここで待機
                 $player = $event->getPlayer();
-                $player->sendMessage("block break hahaha");
+                
+                $block = $event->getBlock();//保持できるかテスト
+                
+                $player->sendMessage(
+                    "ブロックが破壊されました。次から選んでください。\n" .
+                    "1: 再設置\n" .
+                    "2: キック\n" .
+                    "3: ブロックの情報を表示"
+                );
+                
+                /** @var PlayerChatEvent $event */
+                $event = yield listen(PlayerChatEvent::class)->filter(function (/** @var PlayerChatEvent $ev */ $ev) use ($player) {
+                    return $ev->getPlayer() === $player;//さっきと同じプレイヤー(オブジェクト)だったら?
+                });//多分ここで待機
+                
+                switch ($event->getMessage()) {
+                    case "1":
+                        $block->getLevel()->setBlock($block, $block);//ちゃんと保持できるはず
+                        $player->sendMessage("ブロックを設置しました！");
+                        break;
+                    case "2":
+                        $player->kick("死んでください");
+                        break;
+                    case "3":
+                        $player->sendMessage($block->__toString());//こっちも
+                        break;
+                    default:
+                        $player->sendMessage("デフォルト！");
+                        break;
+                }
+                
+                //ここでフローが終了。
             }));
         }
         
