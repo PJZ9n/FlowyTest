@@ -20,14 +20,26 @@
     declare(strict_types=1);
     
     namespace PJZ9n\FlowyTest;
-    
-    use pocketmine\plugin\PluginBase;
 
+    require("vendor\autoload.php");
+
+    use Closure;
+    use flowy\Flowy;
+    use function flowy\listen;
+    use pocketmine\plugin\PluginBase;
+    use pocketmine\event\block\BlockBreakEvent;
+    
     class FlowyTest extends PluginBase
     {
         
-        public function onEnable() {
-            //
+        public function onEnable()
+        {
+            Flowy::run($this, Closure::fromCallable(function () {
+                /** @var BlockBreakEvent $event */
+                $event = yield listen(BlockBreakEvent::class);
+                $player = $event->getPlayer();
+                $player->sendMessage("block break hahaha");
+            }));
         }
         
     }
