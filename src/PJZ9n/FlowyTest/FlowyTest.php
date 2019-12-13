@@ -20,9 +20,9 @@
     declare(strict_types=1);
     
     namespace PJZ9n\FlowyTest;
-
-    require("vendor\autoload.php");
-
+    
+    require_once(dirname(__FILE__) . "/../../../vendor/autoload.php");
+    
     use Closure;
     use flowy\Flowy;
     use function flowy\listen;
