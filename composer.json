@@ -1,0 +1,8 @@
+{
+    "name": "pjz9n/flowy-test",
+    "type": "project",
+    "require": {
+        "flowy/core": "v3.1.2.1"
+    },
+    "license": "GPL"
+}
